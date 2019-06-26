@@ -33,49 +33,46 @@ class App extends Component {
   }
   
   pickCard(cardIndex) {
-    if (this.state.deck[cardIndex].isFlipped) {
-      return
-    }
-    let cardToFlip = {...this.state.deck[cardIndex] };
+    let newDeck = this.state.deck.map(card => {
+      return {...card}
+    });
     
-    cardToFlip.isFlipped = true;
+    if (newDeck[cardIndex].isFlipped) return;
+    newDeck[cardIndex].isFlipped = true;
     
     let newPickedCards = this.state.pickedCards.concat(cardIndex);
-    let newDeck = this.state.deck.map((card, index) => {
-      if (cardIndex === index) {
-        return cardToFlip
-      }
-      return card;
-    });
 
     if (newPickedCards.length === 2) {
       let card1Index = newPickedCards[0];
       let card2Index = newPickedCards[1];
-      if (newDeck[card1Index].symbol !== newDeck[card2Index].symbol) {
-        this.unflipCards(card1Index, card2Index);
-      }
+      let card1 = newDeck[card1Index];
+      let card2 = newDeck[card2Index];
+      if ( card1.symbol !== card2.symbol ) {
+        // unflip both cards
+        setTimeout(()=>{
+          this.unflipCards(card1Index, card2Index);
+        }, 1000 );
+      } 
       newPickedCards = [];
     }
 
-    this.setState({deck: newDeck, pickedCards: newPickedCards});
+    this.setState({
+      deck: newDeck,
+      pickedCards: newPickedCards
+    });
   }
 
   unflipCards (card1Index, card2Index) {
-    const card1 = {...this.state.deck[card1Index]};
-    const card2 = {...this.state.deck[card2Index]};
-    card1.isFlipped = false;
-    card2.isFlipped = false;
-    
-    let newDeck = this.state.deck.map((card, index) => {
-      if (card1Index === index) {
-        return card1;
-      } else if (card2Index === index) {
-        return card2;
-      } else {
-        return card;
-      }
+    let newDeck = this.state.deck.map((card) => {
+      return {...card}
     });
-    return newDeck;
+
+    newDeck[card1Index].isFlipped = false;
+    newDeck[card2Index].isFlipped = false;
+
+    this.setState({
+      deck: newDeck
+    })
   }
 
   render() {
